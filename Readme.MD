@@ -7,9 +7,11 @@
 1. 支持 SSH 密码 或者密钥上传
 2. 仅更新不删除
 3. 支持 windows 上传到 Linux
-4. 支持 Json/ yaml / prop 文件配置
+4. 支持 JSON / yaml 文件配置
 
 ## 配置
+
+### json example
 
 ```json
 [
@@ -26,6 +28,22 @@
     }
 ]
 ```
+
+### yaml example
+
+``` yaml
+- source: ""
+  dest: ""
+  ignore: [ "" ]
+  auto_delete: false
+  delay_time: 1
+  protocol: "sftp"
+  host: ""
+  port: 22
+  username: 
+  private_key: ""
+
+  ```
 
 ## 使用
 
