@@ -9,20 +9,18 @@ import (
 )
 
 type ProjectSyncConfig struct {
-	Local       string   `json:"source"`
-	Remote      string   `json:"dest"`
-	WatcherPath string   `json:"watcher_path"`
-	Ignore      []string `json:"ignore"`
-	AutoDelete  bool     `json:"auto_delete"`
-	Delay       int      `json:"delay_time"`
+	Local  string   `json:"source" yaml:"source"`
+	Remote string   `json:"dest" yaml:"dest"`
+	Ignore []string `json:"ignore" yaml:"ignore"`
+	Delay  int      `json:"delay_time" yaml:"delay_time"`
 
 	// scp
-	Protocol       string `json:"protocol"`
-	Host           string `json:"host"`
-	Port           int    `json:"port"`
-	UserName       string `json:"username"`
-	Password       string `json:"password"`
-	PrivateKeyPath string `json:"private_key"`
+	Protocol       string `json:"protocol" yaml:"protocol"`
+	Host           string `json:"host" yaml:"host"`
+	Port           int    `json:"port" yaml:"port"`
+	UserName       string `json:"username" yaml:"username"`
+	Password       string `json:"password" yaml:"passowrd"`
+	PrivateKeyPath string `json:"private_key" yaml:"private_key"`
 }
 
 type Sync struct {

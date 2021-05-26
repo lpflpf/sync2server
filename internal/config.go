@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/magiconair/properties"
 	"gopkg.in/yaml.v2"
 
 	"path/filepath"
@@ -27,12 +26,6 @@ func LoadConfig(file string, s *[]ProjectSyncConfig) error {
 		return json.Unmarshal(data, s)
 	case ".yaml":
 		return yaml.Unmarshal(data, s)
-	case ".properties", ".prop":
-		p, err := properties.Load(data, properties.UTF8)
-		if err != nil {
-			return errors.New(file + " load err." + err.Error())
-		}
-		return p.Decode(s)
 	}
 
 	return errors.New("Do not support this type file:" + file)
