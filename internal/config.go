@@ -5,10 +5,9 @@ import (
 	"errors"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 
 	"gopkg.in/yaml.v2"
-
-	"path/filepath"
 )
 
 func LoadConfig(file string, s *[]ProjectSyncConfig) error {
