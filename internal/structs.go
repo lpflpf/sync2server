@@ -13,6 +13,7 @@ type ProjectSyncConfig struct {
 	Remote string   `json:"dest" yaml:"dest"`
 	Ignore []string `json:"ignore" yaml:"ignore"`
 	Delay  int      `json:"delay_time" yaml:"delay_time"`
+	SupportRemove bool `json:"support_remove" yaml:"support_remove"`
 
 	// scp
 	Protocol       string `json:"protocol" yaml:"protocol"`

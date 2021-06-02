@@ -77,19 +77,18 @@ func (proj *Project) Watch() {
 
 			if event.Op&fsnotify.Write == fsnotify.Write {
 				info, _ := os.Stat(event.Name)
-				if info.IsDir(){
+				if info.IsDir() {
 					continue
 				}
-
 
 				proj.chUpdate <- event.Name
 			}
 
-			if event.Op&fsnotify.Remove == fsnotify.Remove {
+			if event.Op&fsnotify.Remove == fsnotify.Remove && proj.config.SupportRemove{
 				proj.chRemove <- event.Name
 			}
 
-			if event.Op&fsnotify.Rename == fsnotify.Rename {
+			if event.Op&fsnotify.Rename == fsnotify.Rename && proj.config.SupportRemove{
 				proj.chRemove <- event.Name
 			}
 
@@ -106,10 +105,41 @@ type None struct{}
 
 func (proj *Project) SyncRemove() {
 	defer proj.wg.Done()
-	for filename := range proj.chRemove {
-		log.Printf("[info] remove file : %s", filename)
-	}
 
+	filenames := make(map[string]None)
+	duration := time.Second * time.Duration(proj.config.Delay)
+	ticker := time.NewTimer(duration)
+	ticker.Stop()
+
+	for filename := range proj.chRemove {
+		filenames[filename] = None{}
+		ticker.Reset(duration)
+
+	stopRecv:
+		for {
+			select {
+			case <-ticker.C:
+				break stopRecv
+			case filename := <-proj.chRemove:
+				filenames[filename] = None{}
+			}
+		}
+
+		sftpClient, err := NewSyncConnect(proj.config)
+		if err != nil {
+			log.Printf("[error] create connect failed, err: %v", err)
+			continue
+		}
+
+		for filename := range filenames {
+			log.Println("begin remove ", filename)
+			if err := proj.Remove(sftpClient, filename); err != nil {
+				log.Printf("remove file: %s failed, %v", filename, err)
+			} else {
+				log.Printf("remove file: %s success", filename)
+			}
+		}
+	}
 }
 
 func (proj *Project) SyncUpdate() {
@@ -167,6 +197,17 @@ func Ignore(config ProjectSyncConfig, file string) bool {
 		}
 	}
 	return false
+}
+
+func (proj *Project) Remove(sftpCLient *sftp.Client, localFilePath string) error {
+	if f, err := os.Stat(localFilePath); err == nil {
+		if f.IsDir() {
+			return sftpCLient.RemoveDirectory(localFilePath)
+		} else {
+			return sftpCLient.Remove(localFilePath)
+		}
+	}
+	return nil
 }
 
 func (proj *Project) Upload(sftpClient *sftp.Client, localFilePath string) {

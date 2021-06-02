@@ -10,7 +10,7 @@ import (
 
 func main() {
 	var configFile string
-	flag.StringVar(&configFile, "config", "", "")
+	flag.StringVar(&configFile, "config", "./config/notify.json", "")
 	flag.Parse()
 
 	configs := []internal.ProjectSyncConfig{}
